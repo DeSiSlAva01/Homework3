@@ -33,9 +33,8 @@ library(dplyr)
 library(tidyverse)
 #4.1
 flights %>%
-  count(dest) %>%
-left_join(airlines, by="carrier")
-group_by(carrier)
+  group_by(carrier) %>%
+count(dest)
 #4.2 ?
 #4.3
 flights %>%
