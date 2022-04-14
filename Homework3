@@ -1,0 +1,47 @@
+#Problem 1
+a=0
+FactorialFunction<-function(Inputnumber){
+  if(Inputnumber==0){
+    Result<-1
+  } else {
+    Result<- Inputnumber
+    while(Inputnumber>1){
+      Result<-(Inputnumber-1)*Result
+      Inputnumber<-Inputnumber-1
+    }
+      
+  }
+  return (Result)
+}
+FactorialFunction (a)
+
+#Problem 2
+v<-c(1,4,6,7)
+
+sdf<-function(InputVector) {
+  avg=sum(InputVector)/length(InputVector)
+  SumDiff<- sum((InputVector-avg)^2)
+  FinalRes<-sqrt(sum((InputVector-avg)^2)/(length(InputVector)-1))
+  return(FinalRes)
+}
+sdf(v)
+sd(v)
+
+#Problem 4
+library(nycflights13)
+library(dplyr)
+library(tidyverse)
+#4.1
+flights %>%
+  count(dest) %>%
+left_join(airlines, by="carrier")
+group_by(carrier)
+#4.2 ?
+#4.3
+flights %>%
+  group_by(planes)%>%
+  summarise(mean_distance=mean(distance)) %>%
+  select(distance,tailnum) %>%
+  inner_join(planes, by="tailnum")%>%
+ arrange(desc(mean_distance))
+ 
