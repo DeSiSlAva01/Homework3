@@ -34,13 +34,14 @@ library(tidyverse)
 #4.1
 flights %>%
   group_by(carrier) %>%
-count(dest)
-#4.2 ?
+count(dest)%>%
+  arrange(desc(dest))
+
+#4.2?
 #4.3
 flights %>%
-  group_by(planes)%>%
-  summarise(mean_distance=mean(distance)) %>%
+  group_by(tailnum)%>%
   select(distance,tailnum) %>%
-  inner_join(planes, by="tailnum")%>%
+  summarise(mean_distance=mean(distance)) %>%
  arrange(desc(mean_distance))
- 
+
