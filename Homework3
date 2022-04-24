@@ -31,17 +31,76 @@ sd(v)
 library(nycflights13)
 library(dplyr)
 library(tidyverse)
+library(tidyquant)
 #4.1
-flights %>%
+a<-flights %>%
+  group_by(carrier,dest) %>%
+  select(carrier,dest) %>%
+  summarise(NrFlights=n()) %>%
+  arrange(desc(NrFlights)) %>%
+  slice_head()''
+
+#4.2
+a<-flights %>%
   group_by(carrier) %>%
-count(dest)%>%
-  arrange(desc(dest))
+  summarise(most=max(arr_delay, na.rm=TRUE)) %>%
+  ungroup()
+view(a)
 
-#4.2?
 #4.3
-flights %>%
+#most miles
+b<-flights %>%
   group_by(tailnum)%>%
-  select(distance,tailnum) %>%
-  summarise(mean_distance=mean(distance)) %>%
- arrange(desc(mean_distance))
+  select(tailnum,distance) %>%
+  summarise(mostmiles=sum(distance)) %>%
+ arrange(tailnum, desc(mostmiles)) %>%
+ slice_head(n=3)
+view(b)
 
+#least miles
+c<-flights %>%
+  group_by(tailnum)%>%
+  select(tailnum,distance) %>%
+  summarise(leastmiles=sum(distance)) %>%
+  arrange(tailnum, desc(leastmiles)) %>%
+  slice_tail(n=3)
+view(c)
+
+#4.4
+# i understand it that way: We should find which are the earliest flights each day and which are the latest because we are looking for first and last flights.
+
+d<- flights %>%
+  group_by(day, dep_time) %>%
+  select(day,flight) %>%
+  summarise(maxx=max(dep_time),month=2, year=2013) %>% # i think that we should find which is the biggest dep_time so that we can see the last flights for each day
+  arrange(desc(maxx)) %>%
+  slice_head()
+ungroup()
+view(d)
+  
+
+v<- flights %>%
+  group_by(day, dep_time) %>%
+  select(day,flight) %>%
+  summarise(minn=min(dep_time), month=2, year=2013) %>% 
+  arrange(desc(minn)) %>%
+  slice_tail()
+na.omit(dep_time) # i googled this function
+view(v)  # i am not sure how to remove the NAs here
+
+#4.5
+ f<-flights %>%
+   group_by(carrier) %>%
+   select(carrier,distance) %>%
+   summarise(most=max(distance), month=3, year=2013) %>%
+   arrange(desc(most)) %>%
+   slice_head() #most miles
+ view(f)
+  
+ f<-flights %>%
+   group_by(carrier) %>%
+   select(carrier,distance) %>%
+   summarise(most=max(distance), month=3, year=2013) %>%
+   arrange(desc(most)) %>%
+   slice_tail() #least miles
+ view(f)
