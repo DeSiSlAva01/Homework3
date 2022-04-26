@@ -73,18 +73,14 @@ d<- flights %>%
   group_by(day, dep_time) %>%
   select(day,flight) %>%
   summarise(maxx=max(dep_time),month=2, year=2013) %>% # i think that we should find which is the biggest dep_time so that we can see the last flights for each day
-  arrange(desc(maxx)) %>%
-  slice_head()
 ungroup()
-view(d)
+view(d) 
   
 
 v<- flights %>%
   group_by(day, dep_time) %>%
   select(day,flight) %>%
   summarise(minn=min(dep_time), month=2, year=2013) %>% 
-  arrange(desc(minn)) %>%
-  slice_tail()
 na.omit(dep_time) # i googled this function
 view(v)  # i am not sure how to remove the NAs here
 
@@ -97,10 +93,34 @@ view(v)  # i am not sure how to remove the NAs here
    slice_head() #most miles
  view(f)
   
- f<-flights %>%
+ p<-flights %>%
    group_by(carrier) %>%
    select(carrier,distance) %>%
-   summarise(most=max(distance), month=3, year=2013) %>%
-   arrange(desc(most)) %>%
-   slice_tail() #least miles
- view(f)
+   summarise(least=min(distance), month=3, year=2013) %>%
+   arrange(desc(least)) %>%
+   slice_head() #least miles
+ view(p)
+
+#4.6
+ 
+delayy<-flights %>%
+   group_by(month) %>%
+   summarise (delayss=count(arr_delay>60, na.rm=TRUE)) %>% 
+   arrange(desc(delayss))
+ view(delayy)
+   
+#4.7
+# I am not sure how to deal with this problem.
+ 
+#4.8
+ 
+ s<-flights %>%
+   group_by(month) %>%
+ summarise(StandardDEV=STDEV(arr_delay), na.rm=TRUE) #It did not work with my sdf function, there were only NAs.
+ view(s)
+   
+ o<-flights %>%
+   group_by(dest) %>%
+   summarise(StandardDEV=STDEV(arr_delay), na.rm=TRUE)
+ view(o)
+   
