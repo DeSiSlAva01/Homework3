@@ -32,8 +32,13 @@ library(nycflights13)
 library(dplyr)
 library(tidyverse)
 library(tidyquant)
+flights
+data<-flights
+not_cancelled<-flights %>%
+  filter(!is.na(air_time))
+
 #4.1
-a<-flights %>%
+a<-not_cancelled %>%
   group_by(carrier,dest) %>%
   select(carrier,dest) %>%
   summarise(NrFlights=n()) %>%
@@ -41,86 +46,63 @@ a<-flights %>%
   slice_head()''
 
 #4.2
-a<-flights %>%
+a<-not_cancelled %>%
   group_by(carrier) %>%
   summarise(most=max(arr_delay, na.rm=TRUE)) %>%
   ungroup()
 view(a)
 
 #4.3
-#most miles
-b<-flights %>%
+
+b<-not_cancelled %>%
   group_by(tailnum)%>%
-  select(tailnum,distance) %>%
-  summarise(mostmiles=sum(distance)) %>%
- arrange(tailnum, desc(mostmiles)) %>%
- slice_head(n=3)
+  summarise(Totaldist=sum(distance)) %>%
+ arrange(desc(Totaldist)) %>%
+ slice(1:3, (n()-2):n()) %>%
+  ungroup()
 view(b)
 
-#least miles
-c<-flights %>%
-  group_by(tailnum)%>%
-  select(tailnum,distance) %>%
-  summarise(leastmiles=sum(distance)) %>%
-  arrange(tailnum, desc(leastmiles)) %>%
-  slice_tail(n=3)
-view(c)
-
 #4.4
-# i understand it that way: We should find which are the earliest flights each day and which are the latest because we are looking for first and last flights.
 
-d<- flights %>%
-  group_by(day, dep_time) %>%
-  select(day,flight) %>%
-  summarise(maxx=max(dep_time),month=2, year=2013) %>% # i think that we should find which is the biggest dep_time so that we can see the last flights for each day
+d<- not_cancelled %>%
+  filter(year==2013, month==2, !is.na(dep_time)) %>%
+  arrange(day, dep_time) %>%
+  group_by(day) %>%
+  filter(row_number()==1 | row_number()==n()) %>%
 ungroup()
 view(d) 
   
 
-v<- flights %>%
-  group_by(day, dep_time) %>%
-  select(day,flight) %>%
-  summarise(minn=min(dep_time), month=2, year=2013) %>% 
-na.omit(dep_time) # i googled this function
-view(v)  # i am not sure how to remove the NAs here
-
 #4.5
- f<-flights %>%
+ f<-not_cancelled %>%
+   filter(year==2013, month==3) %>%
    group_by(carrier) %>%
-   select(carrier,distance) %>%
-   summarise(most=max(distance), month=3, year=2013) %>%
-   arrange(desc(most)) %>%
-   slice_head() #most miles
+   summarise(Totaldist=sum(distance)) %>%
+   arrange(desc(Totaldist)) %>%
+   slice(1,n())
+ ungroup()
  view(f)
-  
- p<-flights %>%
-   group_by(carrier) %>%
-   select(carrier,distance) %>%
-   summarise(least=min(distance), month=3, year=2013) %>%
-   arrange(desc(least)) %>%
-   slice_head() #least miles
- view(p)
 
 #4.6
  
-delayy<-flights %>%
+delayy<-not_cancelled %>%
    group_by(month) %>%
-   summarise (delayss=count(arr_delay>60, na.rm=TRUE)) %>% 
-   arrange(desc(delayss))
+   summarise (delayss=sum(arr_delay>60)) %>% 
+   arrange(desc(delayss)) %>%
+  slice(1)
+ungroup()
  view(delayy)
    
 #4.7
-# I am not sure how to deal with this problem.
+
+m<- not_cancelled %>%
+  summarise(diff=mean(dep_time-lag(dep_time), na.rm=TRUE)) # i searched on the internet and found the function diff (i forgot about it the previous time)
+  view(m)
  
 #4.8
  
- s<-flights %>%
-   group_by(month) %>%
- summarise(StandardDEV=STDEV(arr_delay), na.rm=TRUE) #It did not work with my sdf function, there were only NAs.
+ s<-not_cancelled %>%
+   group_by(month,dest) %>%
+ summarise(StandardDEV=STDEV(dep_delay, na.rm=TRUE)) %>%
+   ungroup()
  view(s)
-   
- o<-flights %>%
-   group_by(dest) %>%
-   summarise(StandardDEV=STDEV(arr_delay), na.rm=TRUE)
- view(o)
-   
