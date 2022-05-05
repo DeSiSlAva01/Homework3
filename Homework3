@@ -100,9 +100,16 @@ m<- not_cancelled %>%
   view(m)
  
 #4.8
- 
+  
+ sdf<-function(InputVector) {
+    avg=sum(InputVector)/length(InputVector)
+    SumDiff<- sum((InputVector-avg)^2)
+    FinalRes<-sqrt(sum((InputVector-avg)^2)/(length(InputVector)-1))
+    return(FinalRes)
+  }
+  
  s<-not_cancelled %>%
    group_by(month,dest) %>%
- summarise(StandardDEV=STDEV(dep_delay, na.rm=TRUE)) %>%
+ summarise(StandardDEV=sdf(dep_delay)) %>%
    ungroup()
  view(s)
